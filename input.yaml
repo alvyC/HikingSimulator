@@ -38,4 +38,5 @@ bridges:
       - name: G
         speed: 15
 strategy:
-      name: "greedy_strategy"
+      #name: "slowest-first-strategy"
+      name: "greedy-strategy"
