@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
     
     try {
 
-    	YAML::Node config = YAML::LoadFile("input.yaml");
+    	YAML::Node config = YAML::LoadFile(yaml_file);
 
     	std::vector<Bridge> bridges;
     	for (const auto& bridgeNode : config["bridges"]) {
@@ -62,8 +62,8 @@ int main(int argc, char** argv) {
         	return 1; // Exit the program with an error code
 	}
 	
+	std::cout << "Using "  << strategyName << " to cross bridge." << std::endl;
 	Strategy* strategy = StrategyFactory::instance().createStrategy(strategyName);
-	std::cout << "Using "  << strategyName << " to cross the bridge." << std::endl;
 	for (auto& bridge : bridges) {
         	double bridgeTime = 0;
 		bridgeTime = strategy->crossBridge(bridge);

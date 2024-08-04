@@ -7,7 +7,7 @@ class SlowestFirstStrategy : public Strategy {
 public:
     double crossBridge(const Bridge& bridge) override {
     	auto cmp_min = [](const Hiker& a, const Hiker& b) { return a.getSpeed() > b.getSpeed(); };
-    	auto cmp_max = [](const Hiker& a, const Hiker& b) { return a.getSpeed() > b.getSpeed(); };
+    	auto cmp_max = [](const Hiker& a, const Hiker& b) { return a.getSpeed() < b.getSpeed(); };
 
 	std::priority_queue<Hiker, std::vector<Hiker>, decltype(cmp_min)> slowestFirst(cmp_min);
 	std::priority_queue<Hiker, std::vector<Hiker>, decltype(cmp_max)> fastestFirst(cmp_max);
