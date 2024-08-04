@@ -63,6 +63,7 @@ int main(int argc, char** argv) {
 	}
 	
 	Strategy* strategy = StrategyFactory::instance().createStrategy(strategyName);
+	std::cout << "Using "  << strategyName << " to cross the bridge." << std::endl;
 	for (auto& bridge : bridges) {
         	double bridgeTime = 0;
 		bridgeTime = strategy->crossBridge(bridge);
