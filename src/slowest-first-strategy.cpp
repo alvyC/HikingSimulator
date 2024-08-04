@@ -1,22 +1,33 @@
+#include <algorithm>
+#include <queue>
+
 #include "strategy.hpp"
 
 class SlowestFirstStrategy : public Strategy {
 public:
     double crossBridge(const Bridge& bridge) override {
-        // Implementation of the slowest-first strategy
+    	auto cmp = [](const Hiker& a, const Hiker& b) { return a.getSpeed() > b.getSpeed(); };
+
+	std::priority_queue<Hiker, std::vector<Hiker>, decltype(cmp)> slowestFirst(cmp);
+	
+	for (auto hiker : bridge.getHikers()) {
+		slowestFirst.push(hiker);
+	}
+
         double totalTime = 0.0;
-        auto hikers = bridge.getHikers();
-	auto n = bridge.getHikers().size();
+  	if (slowestFirst.size() == 1)
+		return bridge.timeToCross(slowestFirst.top(), slowestFirst.top());
+		
+	while (slowestFirst.size() > 1) {
+		Hiker slowest1 = slowestFirst.top(); slowestFirst.pop();
+		Hiker slowest2 = slowestFirst.top();
 
-        while (n > 1) {
-            double time = bridge.timeToCross(hikers[0], hikers[n-1]);
-            totalTime += time;
-            n -= 1;
-        }
-        if (n == 1) {
-            totalTime += bridge.timeToCross(hikers[0], hikers[0]);
-        }
-
+		totalTime += bridge.timeToCross(slowest1, slowest2);
+		
+		if (slowestFirst.size() != 1) // if this is not the last trip, faster of the slowest two will come back
+			totalTime += bridge.timeToCross(slowest2, slowest2);
+	}
+	
         return totalTime;
     }
 };

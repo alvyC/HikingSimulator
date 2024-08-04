@@ -10,9 +10,19 @@ public:
 	std::sort(hikers.begin(), hikers.end(), [](const Hiker& a, const Hiker& b) {
         	return a.getSpeed() < b.getSpeed();
     	});
-    
-    	Hiker fastestHiker = hikers.back();
+   	
     	double totalTime = 0.0;
+	
+	if (hikers.size() == 0 ) {
+		return totalTime;
+	}
+
+
+	if (hikers.size() == 1) {
+		return bridge.timeToCross(hikers.back(), hikers.back());
+	}
+
+    	Hiker fastestHiker = hikers.back();
     	for (const auto& hiker : hikers ) {
     		if (hiker.getName() == fastestHiker.getName())
 			continue;
@@ -20,10 +30,9 @@ public:
 		double time = bridge.timeToCross(hiker, fastestHiker);
   		totalTime += time;
     	}
-    
 
     	double fastestHikerTime = bridge.timeToCross(fastestHiker, fastestHiker);
-    	totalTime += (fastestHikerTime * hikers.size()-2);
+    	totalTime += (fastestHikerTime * (hikers.size()-2));
         
    	return totalTime;
     }
