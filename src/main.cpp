@@ -19,13 +19,28 @@ double time_to_cross(const Bridge& bridge, const Hiker& hiker1, const Hiker& hik
     return bridge.length / slower_speed;
 }
 
-double cross_bridge(Bridge& bridge) {
+
+double cross_bridge_greedy_strategy(Bridge& bridge) {
     // Sort hikers by their speed in ascending order
     std::sort(bridge.hikers.begin(), bridge.hikers.end(), [](const Hiker& a, const Hiker& b) {
         return a.speed < b.speed;
     });
-
+    
+    Hiker fastest_hiker = bridge.hikers.back();
     double total_time = 0.0;
+    for (const auto& hiker : bridge.hikers ) {
+    	if (hiker.name == fastest_hiker.name)
+		continue;
+
+	double time = time_to_cross(bridge, hiker, fastest_hiker);
+  	total_time += time;		
+    }
+    
+
+    double fastest_hiker_time = time_to_cross(bridge, fastest_hiker, fastest_hiker);
+    total_time += (fastest_hiker_time * bridge.hikers.size()-2);
+    
+    /*
     while (bridge.hikers.size() > 1) {
         if (bridge.hikers.size() == 2) {
             total_time += time_to_cross(bridge, bridge.hikers[0], bridge.hikers[1]);
@@ -38,6 +53,8 @@ double cross_bridge(Bridge& bridge) {
                                time_to_cross(bridge, bridge.hikers.back(), bridge.hikers[bridge.hikers.size() - 2]);
             double strategy2 = 2 * time_to_cross(bridge, bridge.hikers[0], bridge.hikers.back()) + 
                                time_to_cross(bridge, bridge.hikers[1], bridge.hikers[bridge.hikers.size() - 2]);
+
+	    double strategy3 = 
 
             // Choose the faster strategy
             total_time += std::min(strategy1, strategy2);
@@ -53,7 +70,7 @@ double cross_bridge(Bridge& bridge) {
         total_time += bridge.length / bridge.hikers[0].speed;
         bridge.hikers.clear();
     }
-
+    */
     return total_time;
 }
 
@@ -90,31 +107,40 @@ int main(int argc, char** argv) {
     
     try {
 
-    YAML::Node config = YAML::LoadFile("input.yaml");
+    	YAML::Node config = YAML::LoadFile("input.yaml");
 
-    std::vector<Bridge> bridges;
-    for (const auto& bridgeNode : config["bridges"]) {
-        Bridge bridge;
-        bridge.length = bridgeNode["length"].as<int>();
+    	std::vector<Bridge> bridges;
+    	for (const auto& bridgeNode : config["bridges"]) {
+        	Bridge bridge;
+        	bridge.length = bridgeNode["length"].as<int>();
 
-        for (const auto& hikerNode : bridgeNode["hikers"]) {
-            Hiker hiker;
-            hiker.name = hikerNode["name"].as<std::string>();
-            hiker.speed = hikerNode["speed"].as<double>();
-            bridge.hikers.push_back(hiker);
-        }
+        	for (const auto& hikerNode : bridgeNode["hikers"]) {
+            		Hiker hiker;
+            		hiker.name = hikerNode["name"].as<std::string>();
+            		hiker.speed = hikerNode["speed"].as<double>();
+            		bridge.hikers.push_back(hiker);
+        	}
 
-        bridges.push_back(bridge);
-    }
+        	bridges.push_back(bridge);
+    	}
 
-    double total_time = 0.0;
-    for (auto& bridge : bridges) {
-        double bridge_time = cross_bridge(bridge);
-        std::cout << "Time to cross bridge of length " << bridge.length << " feet: " << bridge_time << " minutes\n";
-        total_time += bridge_time;
-    }
+    	double total_time = 0.0;
+    	auto strategy = config["strategy"]["name"].as<std::string>();
+	for (auto& bridge : bridges) {
+        	double bridge_time = 0;
+		if (strategy == "greedy_strategy") {
+			bridge_time = cross_bridge_greedy_strategy(bridge);
+		}	
+		else {
+			bridge_time = cross_bridge_greedy_strategy(bridge);
+		}
 
-    std::cout << "Total time to cross all bridges: " << total_time << " minutes\n";
+		std::cout << "Time to cross bridge of length " << bridge.length << " feet: " << bridge_time << " minutes\n";
+        	total_time += bridge_time;
+    	}
+
+    	std::cout << "Total time to cross all bridges: " << total_time << " minutes\n";
+
     } catch (const YAML::Exception& e) {
     	std::cerr << "Error loading YAML file: " << e.what() << std::endl;
 	return 1;

@@ -37,3 +37,5 @@ bridges:
         speed: 25
       - name: G
         speed: 15
+strategy:
+      name: "greedy_strategy"
